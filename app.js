@@ -4,16 +4,20 @@ const protocols = require('./protocols');
 
 async function parseLookUpFile(lookUpFile) {
 	console.log('Reading lookup csv file.');
-	const results = [];
 	return new Promise((resolve, reject) => {
 		const lookup = {};
 		fs.createReadStream(lookUpFile)
 			.pipe(csv())
 			.on('data', (row) => {
 				if (Object.values(row).some(value => value.trim() !== '')) {
-					results.push(row);
-					const key = `${row.dstport}_${row.protocol.toLowerCase()}`;
-					lookup[key] = row.tag.toLowerCase();
+					const trimmedRow = {
+						dstport: row.dstport.trim(),
+						protocol: row.protocol.trim().toLowerCase(),
+						tag: row.tag.trim().toLowerCase()
+					};
+
+					const key = `${trimmedRow.dstport}_${trimmedRow.protocol}`;
+					lookup[key] = trimmedRow.tag;
 				}
 			})
 			.on('end', () => {
@@ -86,7 +90,7 @@ async function main() {
 	const outputFileName = process.argv[4];
 
 	if (!flowLogsFile || !lookUpFile || !outputFileName) {
-		console.error('Usage: node script.js <flow_logs_file> <lookup_file> <output_file>');
+		console.error('Usage: node app.js <flow_logs_file> <lookup_file> <output_file>');
 		process.exit(1);
 	}
 

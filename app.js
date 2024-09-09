@@ -55,6 +55,28 @@ async function parseFlowLogsFile(flowLogsFile, lookupTable) {
 	}
 }
 
+async function writeToFile(data, outputFileName) {
+	try {
+		const { tagsExistsCount, portProtocolCount } = data;
+		let output = 'Tag Counts:\nTag, Count\n';
+		for (const [tag, count] of Object.entries(tagsExistsCount)) {
+			output += `${tag}, ${count}\n`;
+		}
+
+		output += '\nPort/Protocol Combination Counts:\nPort, Protocol, Count\n';
+		for (const [key, count] of Object.entries(portProtocolCount)) {
+			const [port, protocol] = key.split('_');
+			output += `${port}, ${protocol}, ${count}\n`;
+		}
+
+		fs.writeFileSync(outputFileName, output);
+		console.log('Output file written successfully.');
+
+	} catch (error) {
+		console.log('ERROR writing to file', error);
+	}
+}
+
 async function main() {
 	const flowLogsFile = process.argv[2];
 	const lookUpFile = process.argv[3];
@@ -66,9 +88,8 @@ async function main() {
 	}
 
 	const lookupTable = await parseLookUpFile(lookUpFile);
-	console.log(lookupTable);
 	const data = await parseFlowLogsFile(flowLogsFile, lookupTable);
-	console.log(data);
+	await writeToFile(data, outputFileName);
 }
 
 main();

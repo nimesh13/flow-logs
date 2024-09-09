@@ -1,0 +1,14 @@
+{
+  "name": "flow-logs",
+  "version": "1.0.0",
+  "description": "Project to parse and group network flow logs.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nimesh Doolani",
+  "license": "ISC",
+  "dependencies": {
+    "csv-parser": "^3.0.0"
+  }
+}

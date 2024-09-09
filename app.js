@@ -1,9 +1,9 @@
 const fs = require('fs');
-const readline = require('readline');
 const csv = require('csv-parser');
 const protocols = require('./protocols');
 
 async function parseLookUpFile(lookUpFile) {
+	console.log('Reading lookup csv file.');
 	const results = [];
 	return new Promise((resolve, reject) => {
 		const lookup = {};
@@ -17,6 +17,7 @@ async function parseLookUpFile(lookUpFile) {
 				}
 			})
 			.on('end', () => {
+				console.log('Finished parsing lookup table.');
 				resolve(lookup);
 			})
 			.on('error', (error) => {
@@ -26,6 +27,7 @@ async function parseLookUpFile(lookUpFile) {
 }
 
 async function parseFlowLogsFile(flowLogsFile, lookupTable) {
+	console.log('Reading flow logs file file.');
 	const tagsExistsCount = {};
 	const portProtocolCount = {};
 
@@ -49,6 +51,7 @@ async function parseFlowLogsFile(flowLogsFile, lookupTable) {
 			portProtocolCount[key]++;
 		});
 
+		console.log('Finished grouping flow logs.');
 		return { tagsExistsCount, portProtocolCount };
 	} catch (error) {
 		console.log('ERROR processing flow logs file', error);
@@ -87,8 +90,10 @@ async function main() {
 		process.exit(1);
 	}
 
+	console.log('Processing files...');
 	const lookupTable = await parseLookUpFile(lookUpFile);
 	const data = await parseFlowLogsFile(flowLogsFile, lookupTable);
+	console.log('Writing to output file...');
 	await writeToFile(data, outputFileName);
 }
 
